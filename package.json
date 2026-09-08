@@ -45,7 +45,8 @@
     "build": "yarn build:webrtc-workspace && bob build",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "prepare": "yarn build:webrtc-workspace && bob build",
-    "format": "prettier --write . --ignore-path ./.eslintignore"
+    "format": "prettier --write . --ignore-path ./.eslintignore",
+    "check:webrtc-published": "node ../../release-automation/check-webrtc-published.mjs"
   },
   "lint-staged": {
     "*": [
