@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.yarn/
+android/build/
+android/.cxx/
+.DS_Store
+*.log
+*.tgz

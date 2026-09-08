@@ -1,0 +1,3 @@
+dist/
+android/build/
+yarn.lock
