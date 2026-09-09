@@ -64,12 +64,12 @@ declare const global: {
 const RUNTIME_NAME = 'FishjamCameraFrames';
 
 interface CameraFrameRuntime {
-  readonly consumer: CameraFrameConsumerHandle;
+  readonly binding: FishjamWorkletsBinding;
   readonly runtime: WorkletRuntime;
 }
 
 let runtimePromise: Promise<CameraFrameRuntime> | null = null;
-let activeSubscription: CameraFrameSubscription | null = null;
+const activeSubscriptions = new WeakMap<CameraFrameProcessor, CameraFrameSubscription>();
 
 function nativeModule(): FishjamWorkletsNativeModule {
   const module = NativeFishjamWorklets;
@@ -96,14 +96,12 @@ async function createCameraFrameRuntime(): Promise<CameraFrameRuntime> {
   if (!binding) {
     throw new Error('Camera frame worklets binding was not installed.');
   }
-  const consumer = binding.createConsumer();
   const runtime = createWorkletRuntime({ name: RUNTIME_NAME });
-  consumer.bindRuntime(runtime);
-  return { consumer, runtime };
+  return { binding, runtime };
 }
 
-// One runtime and one consumer for the whole app: worklet runtimes cannot be
-// destroyed, and each one owns a thread.
+// One runtime for the whole app: worklet runtimes cannot be destroyed, and each
+// one owns a thread. Consumers are cheap, so every subscription gets its own.
 function ensureCameraFrameRuntime(): Promise<CameraFrameRuntime> {
   if (!runtimePromise) {
     runtimePromise = createCameraFrameRuntime().catch((cause: unknown) => {
@@ -114,23 +112,28 @@ function ensureCameraFrameRuntime(): Promise<CameraFrameRuntime> {
   return runtimePromise;
 }
 
+function throwIfAttached(processor: CameraFrameProcessor): void {
+  if (activeSubscriptions.has(processor)) {
+    throw new Error('A camera frame callback is already attached. Remove it before attaching another.');
+  }
+}
+
 /**
  * Starts calling `callback` on the camera frame runtime for every frame the
- * processor's track captures. Only one callback can be attached at a time;
- * remove the previous subscription first.
+ * processor's track captures. Each processor can have one callback at a time;
+ * remove the previous subscription before attaching another to the same
+ * processor. Different processors may each have their own.
  */
 export async function attachCameraFrameCallback(
   processor: CameraFrameProcessor,
   callback: CameraFrameCallback,
 ): Promise<CameraFrameSubscription> {
-  if (activeSubscription) {
-    throw new Error('A camera frame callback is already attached. Remove it before attaching another.');
-  }
-  const { consumer, runtime } = await ensureCameraFrameRuntime();
-  if (activeSubscription) {
-    throw new Error('A camera frame callback is already attached. Remove it before attaching another.');
-  }
+  throwIfAttached(processor);
+  const { binding, runtime } = await ensureCameraFrameRuntime();
+  throwIfAttached(processor);
 
+  const consumer = binding.createConsumer();
+  consumer.bindRuntime(runtime);
   scheduleOnRuntime(runtime, () => {
     'worklet';
     consumer.setCallback(callback);
@@ -153,8 +156,8 @@ export async function attachCameraFrameCallback(
         return;
       }
       removed = true;
-      if (activeSubscription === subscription) {
-        activeSubscription = null;
+      if (activeSubscriptions.get(processor) === subscription) {
+        activeSubscriptions.delete(processor);
       }
       processor.detach();
       scheduleOnRuntime(runtime, () => {
@@ -163,6 +166,6 @@ export async function attachCameraFrameCallback(
       });
     },
   };
-  activeSubscription = subscription;
+  activeSubscriptions.set(processor, subscription);
   return subscription;
 }

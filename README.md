@@ -48,5 +48,6 @@ subscription.remove();
 ```
 
 The callback runs on a dedicated camera frame runtime, never on the JS thread. Frames are
-admitted one at a time: while the callback holds a frame, newer ones are dropped. Only one
-callback can be attached at a time.
+admitted one at a time: while the callback holds a frame, newer ones are dropped. Each
+processor takes one callback at a time; remove it before attaching another to the same
+processor. Different processors (different camera tracks) can each have their own.
