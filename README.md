@@ -10,9 +10,15 @@ it compile no extra native code.
 yarn add @fishjam-cloud/react-native-worklets react-native-worklets
 ```
 
-Peer dependencies: `@fishjam-cloud/react-native-webrtc`, `react-native-worklets` (>= 0.12.0)
+Peer dependencies: `@fishjam-cloud/react-native-webrtc`, `react-native-worklets` (0.12.x)
 and the `react-native-worklets/plugin` Babel plugin in the app. Requires the New
 Architecture on both platforms.
+
+## Versioning
+
+The minor version follows the `react-native-worklets` minor it is built for:
+`0.12.x` of this package works with `react-native-worklets` `0.12.x`. Patch releases
+are this package's own fixes and do not change the supported `react-native-worklets`.
 
 ### Android
 
