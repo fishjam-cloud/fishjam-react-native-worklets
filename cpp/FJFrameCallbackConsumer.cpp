@@ -46,7 +46,7 @@ bool waitForAcquireFence(const FJCameraFrame &frame) {
         static std::atomic<int> failureCount{0};
         int failures = ++failureCount;
         if (failures <= 5 || failures % kAcquireFenceLogEveryNthFailure == 0) {
-            __android_log_print(ANDROID_LOG_WARN, "FishjamWebrtcWorklets",
+            __android_log_print(ANDROID_LOG_WARN, "FishjamWorklets",
                                 "Camera frame acquire fence %s (%d so far); dropping the frame",
                                 result == 0 ? "timed out" : "failed", failures);
         }

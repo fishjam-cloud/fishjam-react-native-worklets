@@ -9,7 +9,7 @@ webrtc_package_json = `node --print "require.resolve('@fishjam-cloud/react-nativ
 webrtc_dir = File.dirname(webrtc_package_json)
 
 Pod::Spec.new do |s|
-  s.name                = 'FishjamReactNativeWebrtcWorklets'
+  s.name                = 'FishjamReactNativeWorklets'
   s.version             = package['version']
   s.summary             = package['description']
   s.homepage            = package['homepage']

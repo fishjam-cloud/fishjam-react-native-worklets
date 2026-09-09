@@ -1,5 +1,5 @@
 {
-  "name": "@fishjam-cloud/react-native-webrtc-worklets",
+  "name": "@fishjam-cloud/react-native-worklets",
   "version": "0.1.0",
   "description": "Run a worklet on every frame a Fishjam camera track captures — the optional frame-processing tier of @fishjam-cloud/react-native-webrtc",
   "license": "Apache-2.0",

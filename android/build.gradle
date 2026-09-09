@@ -26,7 +26,7 @@ def fishjamWebrtcDir = resolveNodePackageDir('@fishjam-cloud/react-native-webrtc
 def reactNativeDir = resolveNodePackageDir('react-native')
 
 android {
-    namespace "com.fishjam.webrtcworklets"
+    namespace "com.fishjam.worklets"
 
     compileSdkVersion safeExtGet('compileSdkVersion', 24)
     buildToolsVersion safeExtGet('buildToolsVersion', "23.0.1")
@@ -88,7 +88,7 @@ dependencies {
         implementation project(":react-native-worklets")
     } else {
         throw new GradleException(
-            "[@fishjam-cloud/react-native-webrtc-worklets] `react-native-worklets` was not found in the project. Install it as an app dependency.")
+            "[@fishjam-cloud/react-native-worklets] `react-native-worklets` was not found in the project. Install it as an app dependency.")
     }
 }
 

@@ -1,4 +1,4 @@
-package com.fishjam.webrtcworklets;
+package com.fishjam.worklets;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Installs the JS global {@code __fishjamWebrtcWorklets} through which the JS side
+ * Installs the JS global {@code __fishjamWorklets} through which the JS side
  * creates camera frame consumers.
  *
  * <p>A JSI global must be set on the JS thread with the live runtime, which a React
@@ -22,7 +22,7 @@ import java.util.List;
 @DoNotStrip
 final class FJWorkletsInstaller {
     static {
-        System.loadLibrary("fishjam-webrtc-worklets");
+        System.loadLibrary("fishjam-worklets");
     }
 
     private final HybridData mHybridData;

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-project(fishjam_webrtc_worklets)
+project(fishjam_worklets)
 
 # Shared C++ (the JSI consumer, the frame queue and the frame host object) lives
 # one directory up, next to the iOS module. FISHJAM_WEBRTC_DIR and
@@ -22,9 +22,9 @@ find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
 find_package(react-native-worklets REQUIRED CONFIG)
 
-# Loaded from Java via System.loadLibrary("fishjam-webrtc-worklets") by
+# Loaded from Java via System.loadLibrary("fishjam-worklets") by
 # FJWorkletsInstaller.
-add_library(fishjam-webrtc-worklets
+add_library(fishjam-worklets
     SHARED
     "${FJ_WORKLETS_CPP_DIR}/FJCameraFrameHostObject.cpp"
     "${FJ_WORKLETS_CPP_DIR}/FJFrameCallbackConsumer.cpp"
@@ -32,21 +32,21 @@ add_library(fishjam-webrtc-worklets
     "${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/FJWorkletsInstaller.cpp"
 )
 
-set_target_properties(fishjam-webrtc-worklets PROPERTIES
+set_target_properties(fishjam-worklets PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
 
 # -frtti and -fexceptions: the worklets headers and jsi::JSError need them.
-target_compile_reactnative_options(fishjam-webrtc-worklets PRIVATE)
+target_compile_reactnative_options(fishjam-worklets PRIVATE)
 
-target_include_directories(fishjam-webrtc-worklets
+target_include_directories(fishjam-worklets
     PRIVATE
     "${FJ_WORKLETS_CPP_DIR}"
     "${FISHJAM_WEBRTC_DIR}/common/cpp/fishjam-video/public"
 )
 
-target_link_libraries(fishjam-webrtc-worklets
+target_link_libraries(fishjam-worklets
     ReactAndroid::jsi
     ReactAndroid::reactnative
     fbjni::fbjni

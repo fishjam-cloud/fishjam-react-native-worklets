@@ -1,4 +1,4 @@
-# @fishjam-cloud/react-native-webrtc-worklets
+# @fishjam-cloud/react-native-worklets
 
 Run a worklet on every frame a Fishjam camera track captures. This is the optional
 frame-processing tier of `@fishjam-cloud/react-native-webrtc`: apps that do not install
@@ -7,7 +7,7 @@ it compile no extra native code.
 ## Install
 
 ```sh
-yarn add @fishjam-cloud/react-native-webrtc-worklets react-native-worklets
+yarn add @fishjam-cloud/react-native-worklets react-native-worklets
 ```
 
 Peer dependencies: `@fishjam-cloud/react-native-webrtc`, `react-native-worklets` (>= 0.12.0)
@@ -28,7 +28,7 @@ finish before your callback runs.
 
 ```ts
 import { getCameraFrameProcessor } from '@fishjam-cloud/react-native-webrtc';
-import { attachCameraFrameCallback } from '@fishjam-cloud/react-native-webrtc-worklets';
+import { attachCameraFrameCallback } from '@fishjam-cloud/react-native-worklets';
 
 const processor = await getCameraFrameProcessor(cameraTrack);
 const subscription = await attachCameraFrameCallback(processor, (frame) => {

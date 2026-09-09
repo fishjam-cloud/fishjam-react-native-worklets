@@ -1330,9 +1330,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/react-native-webrtc-worklets@workspace:.":
+"@fishjam-cloud/react-native-webrtc@npm:0.30.2":
+  version: 0.30.2
+  resolution: "@fishjam-cloud/react-native-webrtc@npm:0.30.2"
+  dependencies:
+    base64-js: "npm:1.5.1"
+    debug: "npm:4.3.4"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/dee24c3d8f56efcfae3e189ec45a59092020455de7c9c944bec7f3eafc13353f4a75158a12bbe9206d728cc618d772456a64f984c170994b67f9e1481f942288
+  languageName: node
+  linkType: hard
+
+"@fishjam-cloud/react-native-worklets@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@fishjam-cloud/react-native-webrtc-worklets@workspace:."
+  resolution: "@fishjam-cloud/react-native-worklets@workspace:."
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@babel/preset-typescript": "npm:^7.27.0"
@@ -1357,18 +1369,6 @@ __metadata:
     react-native-worklets: ">=0.12.0"
   languageName: unknown
   linkType: soft
-
-"@fishjam-cloud/react-native-webrtc@npm:0.30.2":
-  version: 0.30.2
-  resolution: "@fishjam-cloud/react-native-webrtc@npm:0.30.2"
-  dependencies:
-    base64-js: "npm:1.5.1"
-    debug: "npm:4.3.4"
-  peerDependencies:
-    react-native: "*"
-  checksum: 10c0/dee24c3d8f56efcfae3e189ec45a59092020455de7c9c944bec7f3eafc13353f4a75158a12bbe9206d728cc618d772456a64f984c170994b67f9e1481f942288
-  languageName: node
-  linkType: hard
 
 "@humanwhocodes/config-array@npm:^0.13.0":
   version: 0.13.0

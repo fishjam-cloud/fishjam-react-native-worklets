@@ -1,4 +1,4 @@
-// Installs `__fishjamWebrtcWorklets` on the main JS runtime. Its single
+// Installs `__fishjamWorklets` on the main JS runtime. Its single
 // function, `createConsumer(name)`, returns a FJFrameCallbackConsumer host
 // object; frames are scheduled on the worklet runtime it is bound to.
 #pragma once

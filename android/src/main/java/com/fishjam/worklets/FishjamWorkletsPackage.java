@@ -1,4 +1,4 @@
-package com.fishjam.webrtcworklets;
+package com.fishjam.worklets;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -8,10 +8,10 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.Collections;
 import java.util.List;
 
-public class FishjamWebrtcWorkletsPackage implements ReactPackage {
+public class FishjamWorkletsPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(new FishjamWebrtcWorkletsModule(reactContext));
+        return Collections.<NativeModule>singletonList(new FishjamWorkletsModule(reactContext));
     }
 
     @Override

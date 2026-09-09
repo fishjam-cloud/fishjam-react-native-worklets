@@ -33,7 +33,7 @@ void FJWorkletsInstaller::install(std::function<void()> onInstalled) {
                             [](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) {
                                 return createConsumer(rt, args, count);
                             }));
-        rt.global().setProperty(rt, "__fishjamWebrtcWorklets", api);
+        rt.global().setProperty(rt, "__fishjamWorklets", api);
         self->installed_.store(true);
         if (onInstalled) {
             onInstalled();

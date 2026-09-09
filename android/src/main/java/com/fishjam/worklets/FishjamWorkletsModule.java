@@ -1,4 +1,4 @@
-package com.fishjam.webrtcworklets;
+package com.fishjam.worklets;
 
 import android.os.Build;
 import android.util.Log;
@@ -9,12 +9,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
-public class FishjamWebrtcWorkletsModule extends ReactContextBaseJavaModule {
-    private static final String TAG = "FishjamWebrtcWorklets";
+public class FishjamWorkletsModule extends ReactContextBaseJavaModule {
+    private static final String TAG = "FishjamWorklets";
 
     private FJWorkletsInstaller installer;
 
-    public FishjamWebrtcWorkletsModule(ReactApplicationContext reactContext) {
+    public FishjamWorkletsModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 

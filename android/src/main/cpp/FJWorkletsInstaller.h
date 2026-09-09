@@ -1,6 +1,6 @@
-// fbjni HybridClass backing com.fishjam.webrtcworklets.FJWorkletsInstaller.
+// fbjni HybridClass backing com.fishjam.worklets.FJWorkletsInstaller.
 //
-// Installs the JS global `__fishjamWebrtcWorklets` on the JS thread through
+// Installs the JS global `__fishjamWorklets` on the JS thread through
 // the CallInvoker, then notifies the Java peer so the install Promise resolves
 // only once the global exists.
 #pragma once
@@ -16,7 +16,7 @@ namespace fishjam::worklets {
 
 class FJWorkletsInstallerHybrid : public facebook::jni::HybridClass<FJWorkletsInstallerHybrid> {
    public:
-    static constexpr auto kJavaDescriptor = "Lcom/fishjam/webrtcworklets/FJWorkletsInstaller;";
+    static constexpr auto kJavaDescriptor = "Lcom/fishjam/worklets/FJWorkletsInstaller;";
 
     static facebook::jni::local_ref<jhybriddata> initHybrid(
         facebook::jni::alias_ref<jhybridobject> javaThis,

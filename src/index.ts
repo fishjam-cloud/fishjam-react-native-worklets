@@ -3,7 +3,7 @@
  *
  * ```ts
  * import { getCameraFrameProcessor } from '@fishjam-cloud/react-native-webrtc';
- * import { attachCameraFrameCallback } from '@fishjam-cloud/react-native-webrtc-worklets';
+ * import { attachCameraFrameCallback } from '@fishjam-cloud/react-native-worklets';
  *
  * const processor = await getCameraFrameProcessor(cameraTrack);
  * const subscription = await attachCameraFrameCallback(processor, (frame) => {
@@ -52,16 +52,16 @@ interface CameraFrameConsumerHandle extends CameraFrameConsumer {
   clearCallback(): void;
 }
 
-interface FishjamWebrtcWorkletsBinding {
+interface FishjamWorkletsBinding {
   createConsumer(): CameraFrameConsumerHandle;
 }
 
-interface FishjamWebrtcWorkletsNativeModule {
+interface FishjamWorkletsNativeModule {
   install(): Promise<void>;
 }
 
 declare const global: {
-  __fishjamWebrtcWorklets?: FishjamWebrtcWorkletsBinding;
+  __fishjamWorklets?: FishjamWorkletsBinding;
 };
 
 const RUNTIME_NAME = 'FishjamCameraFrames';
@@ -74,11 +74,11 @@ interface CameraFrameRuntime {
 let runtimePromise: Promise<CameraFrameRuntime> | null = null;
 let activeSubscription: CameraFrameSubscription | null = null;
 
-function nativeModule(): FishjamWebrtcWorkletsNativeModule {
-  const module = (NativeModules as { FishjamWebrtcWorklets?: FishjamWebrtcWorkletsNativeModule }).FishjamWebrtcWorklets;
+function nativeModule(): FishjamWorkletsNativeModule {
+  const module = (NativeModules as { FishjamWorklets?: FishjamWorkletsNativeModule }).FishjamWorklets;
   if (!module) {
     throw new Error(
-      '@fishjam-cloud/react-native-webrtc-worklets is not linked. Install the package and rebuild the native app.',
+      '@fishjam-cloud/react-native-worklets is not linked. Install the package and rebuild the native app.',
     );
   }
   return module;
@@ -95,7 +95,7 @@ function describeInstallError(cause: unknown): Error {
 
 async function createCameraFrameRuntime(): Promise<CameraFrameRuntime> {
   await nativeModule().install();
-  const binding = global.__fishjamWebrtcWorklets;
+  const binding = global.__fishjamWorklets;
   if (!binding) {
     throw new Error('Camera frame worklets binding was not installed.');
   }

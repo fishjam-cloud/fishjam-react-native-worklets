@@ -23,16 +23,16 @@
 @end
 
 #if FJ_HAS_CALL_INVOKER
-@interface FishjamWebrtcWorkletsModule : NSObject <RCTBridgeModule, RCTCallInvokerModule>
+@interface FishjamWorkletsModule : NSObject <RCTBridgeModule, RCTCallInvokerModule>
 @property(nonatomic, nullable) RCTCallInvoker *callInvoker;
 #else
-@interface FishjamWebrtcWorkletsModule : NSObject <RCTBridgeModule>
+@interface FishjamWorkletsModule : NSObject <RCTBridgeModule>
 #endif
 @end
 
-@implementation FishjamWebrtcWorkletsModule
+@implementation FishjamWorkletsModule
 
-RCT_EXPORT_MODULE(FishjamWebrtcWorklets)
+RCT_EXPORT_MODULE(FishjamWorklets)
 
 + (BOOL)requiresMainQueueSetup {
     return NO;
