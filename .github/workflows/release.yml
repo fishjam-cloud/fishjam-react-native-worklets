@@ -21,3 +21,5 @@ jobs:
       - run: yarn test
       - run: yarn pack --out package.tgz
       - run: npm publish package.tgz --provenance --access public ${{ github.event.release.prerelease && '--tag rc' || '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
