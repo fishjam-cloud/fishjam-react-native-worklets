@@ -1,21 +1,35 @@
 package com.fishjam.worklets;
 
-import com.facebook.react.ReactPackage;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 
 import java.util.Collections;
-import java.util.List;
 
-public class FishjamWorkletsPackage implements ReactPackage {
+public class FishjamWorkletsPackage extends BaseReactPackage {
+    @Nullable
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(new FishjamWorkletsModule(reactContext));
+    public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+        if (FishjamWorkletsModule.NAME.equals(name)) {
+            return new FishjamWorkletsModule(reactContext);
+        }
+        return null;
     }
 
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return () -> Collections.singletonMap(
+            FishjamWorkletsModule.NAME,
+            new ReactModuleInfo(
+                FishjamWorkletsModule.NAME,
+                FishjamWorkletsModule.class.getName(),
+                false,
+                false,
+                false,
+                true));
     }
 }

@@ -1,36 +1,17 @@
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
-#import <objc/runtime.h>
 
-#if __has_include(<React/RCTCallInvokerModule.h>)
-#import <React/RCTCallInvoker.h>
-#import <React/RCTCallInvokerModule.h>
-#define FJ_HAS_CALL_INVOKER 1
-#endif
+#import <FishjamWorkletsSpec/FishjamWorkletsSpec.h>
 
 #include <memory>
 
 #include "FJWorkletsJSI.h"
 
-// ObjC holder for the C++ installer, stored on the module as an associated object.
-@interface FJWorkletsInstallerBox : NSObject {
-   @public
-    std::shared_ptr<fishjam::worklets::FJWorkletsInstaller> installer;
+@interface FishjamWorkletsModule : NSObject <NativeFishjamWorkletsSpec>
+@end
+
+@implementation FishjamWorkletsModule {
+    std::shared_ptr<fishjam::worklets::FJWorkletsInstaller> installer_;
 }
-@end
-
-@implementation FJWorkletsInstallerBox
-@end
-
-#if FJ_HAS_CALL_INVOKER
-@interface FishjamWorkletsModule : NSObject <RCTBridgeModule, RCTCallInvokerModule>
-@property(nonatomic, nullable) RCTCallInvoker *callInvoker;
-#else
-@interface FishjamWorkletsModule : NSObject <RCTBridgeModule>
-#endif
-@end
-
-@implementation FishjamWorkletsModule
 
 RCT_EXPORT_MODULE(FishjamWorklets)
 
@@ -38,37 +19,20 @@ RCT_EXPORT_MODULE(FishjamWorklets)
     return NO;
 }
 
-- (FJWorkletsInstallerBox *)fj_installerBox {
-#if FJ_HAS_CALL_INVOKER
-    static const void *key = &key;
-    FJWorkletsInstallerBox *box = objc_getAssociatedObject(self, key);
-    if (box != nil) {
-        return box;
-    }
-    RCTCallInvoker *invoker = self.callInvoker;
-    if (invoker == nil) {
-        return nil;
-    }
-    std::shared_ptr<facebook::react::CallInvoker> jsInvoker = [invoker callInvoker];
-    if (!jsInvoker) {
-        return nil;
-    }
-    box = [FJWorkletsInstallerBox new];
-    box->installer = std::make_shared<fishjam::worklets::FJWorkletsInstaller>(jsInvoker);
-    objc_setAssociatedObject(self, key, box, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    return box;
-#else
-    return nil;
-#endif
-}
-
-RCT_REMAP_METHOD(install, installWithResolver : (RCTPromiseResolveBlock)resolve rejecter : (RCTPromiseRejectBlock)reject) {
-    FJWorkletsInstallerBox *box = [self fj_installerBox];
-    if (box == nil) {
+RCT_EXPORT_METHOD(install : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+    if (!installer_) {
         reject(@"E_NO_JSI", @"Camera frame worklets require the New Architecture.", nil);
         return;
     }
-    box->installer->install([resolve]() { resolve(nil); });
+    installer_->install([resolve]() { resolve(nil); });
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+    if (params.jsInvoker) {
+        installer_ = std::make_shared<fishjam::worklets::FJWorkletsInstaller>(params.jsInvoker);
+    }
+    return std::make_shared<facebook::react::NativeFishjamWorkletsSpecJSI>(params);
 }
 
 @end

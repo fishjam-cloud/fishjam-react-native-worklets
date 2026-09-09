@@ -15,8 +15,9 @@
  * ```
  */
 import type { CameraFrameConsumer, CameraFrameProcessor } from '@fishjam-cloud/react-native-webrtc';
-import { NativeModules } from 'react-native';
 import { createWorkletRuntime, scheduleOnRuntime, type WorkletRuntime } from 'react-native-worklets';
+
+import NativeFishjamWorklets, { type Spec as FishjamWorkletsNativeModule } from './NativeFishjamWorklets';
 
 export type CameraFramePixelFormat = 'nv12' | 'bgra8' | 'rgba8' | 'unknown';
 
@@ -56,10 +57,6 @@ interface FishjamWorkletsBinding {
   createConsumer(): CameraFrameConsumerHandle;
 }
 
-interface FishjamWorkletsNativeModule {
-  install(): Promise<void>;
-}
-
 declare const global: {
   __fishjamWorklets?: FishjamWorkletsBinding;
 };
@@ -75,7 +72,7 @@ let runtimePromise: Promise<CameraFrameRuntime> | null = null;
 let activeSubscription: CameraFrameSubscription | null = null;
 
 function nativeModule(): FishjamWorkletsNativeModule {
-  const module = (NativeModules as { FishjamWorklets?: FishjamWorkletsNativeModule }).FishjamWorklets;
+  const module = NativeFishjamWorklets;
   if (!module) {
     throw new Error(
       '@fishjam-cloud/react-native-worklets is not linked. Install the package and rebuild the native app.',

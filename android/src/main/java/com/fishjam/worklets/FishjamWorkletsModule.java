@@ -5,12 +5,12 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
-public class FishjamWorkletsModule extends ReactContextBaseJavaModule {
-    private static final String TAG = "FishjamWorklets";
+@ReactModule(name = FishjamWorkletsModule.NAME)
+public class FishjamWorkletsModule extends NativeFishjamWorkletsSpec {
+    public static final String NAME = NativeFishjamWorkletsSpec.NAME;
 
     private FJWorkletsInstaller installer;
 
@@ -19,11 +19,6 @@ public class FishjamWorkletsModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public String getName() {
-        return TAG;
-    }
-
-    @ReactMethod
     public void install(Promise promise) {
         // Camera frames arrive as AHardwareBuffers, which need API 26.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -34,7 +29,7 @@ public class FishjamWorkletsModule extends ReactContextBaseJavaModule {
         try {
             currentInstaller = getInstaller();
         } catch (Throwable cause) {
-            Log.w(TAG, "Failed to build the JSI installer", cause);
+            Log.w(NAME, "Failed to build the JSI installer", cause);
             promise.reject("E_NO_JSI", "Camera frame worklets could not be installed.", cause);
             return;
         }
