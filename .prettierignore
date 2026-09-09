@@ -1,3 +1,6 @@
 dist/
 android/build/
+example/android/
+example/ios/
+example/.expo/
 yarn.lock
