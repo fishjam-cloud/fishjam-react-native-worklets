@@ -37,8 +37,7 @@ react {
 android {
     namespace "com.fishjam.worklets"
 
-    compileSdkVersion safeExtGet('compileSdkVersion', 24)
-    buildToolsVersion safeExtGet('buildToolsVersion', "23.0.1")
+    compileSdkVersion safeExtGet('compileSdkVersion', 35)
     ndkVersion safeExtGet('ndkVersion', '27.1.12297006')
 
     buildFeatures {
@@ -46,10 +45,10 @@ android {
     }
 
     defaultConfig {
+        // Frames need API 26 at runtime; install() rejects below that, so the
+        // library itself only requires what react-native does.
         minSdkVersion safeExtGet('minSdkVersion', 24)
-        targetSdkVersion safeExtGet('targetSdkVersion', 24)
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion safeExtGet('targetSdkVersion', 35)
 
         externalNativeBuild {
             cmake {
@@ -73,25 +72,29 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         // Shared with the app / other modules; the app packages one copy of each.
-        excludes = [
-            "**/libc++_shared.so",
-            "**/libfbjni.so",
-            "**/libjsi.so",
-            "**/libreactnative.so",
-            "**/libworklets.so",
-        ]
+        jniLibs {
+            excludes += [
+                "**/libc++_shared.so",
+                "**/libfbjni.so",
+                "**/libjsi.so",
+                "**/libreactnative.so",
+                "**/libworklets.so",
+            ]
+        }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation "com.facebook.react:react-android:+"
+    // Unversioned on purpose: the React Native Gradle plugin pins react-android
+    // to the app's react-native version through dependency substitution.
+    implementation "com.facebook.react:react-android"
     implementation 'com.facebook.fbjni:fbjni:0.6.0'
     if (rootProject.subprojects.find { it.name == "react-native-worklets" } != null) {
         implementation project(":react-native-worklets")
