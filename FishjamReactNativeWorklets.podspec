@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.license             = package['license']
   s.author              = { 'Fishjam Cloud' => 'https://github.com/fishjam-cloud' }
   s.source              = { :git => 'https://github.com/fishjam-cloud/fishjam-react-native-worklets.git', :tag => s.version.to_s }
-  s.platforms           = { :ios => '13.4' }
+  s.platforms           = { :ios => min_ios_version_supported }
   s.requires_arc        = true
 
   s.source_files        = 'ios/**/*.{h,m,mm}', 'cpp/**/*.{h,cpp}'

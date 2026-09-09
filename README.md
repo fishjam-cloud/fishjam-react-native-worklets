@@ -29,8 +29,8 @@ are this package's own fixes and do not change the supported `react-native-workl
 ### iOS
 
 The module is a TurboModule, so the app must run the New Architecture (the default in
-Expo and React Native templates). It needs iOS 16.4 or newer, the same as React Native
-0.86. `install()` runs once from JS: it needs the JS call invoker that the New
+Expo and React Native templates). It needs iOS 15.1 or newer, the same as React Native
+0.86 (Expo SDK 57 apps target 16.4). `install()` runs once from JS: it needs the JS call invoker that the New
 Architecture hands to every TurboModule, and rejects with `E_NO_JSI` when it is not
 there. Frames are `CVPixelBufferRef`s in the camera's native format (NV12 or BGRA).
 
