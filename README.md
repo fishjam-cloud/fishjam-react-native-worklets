@@ -81,6 +81,9 @@ processing on such devices.
 JS found no native module. Rebuild the app after installing the package (`expo prebuild`
 or `pod install`; a JS-only reload is not enough), and check that the package is a
 direct dependency of the app so autolinking sees it.
+On Android, if the module was installed before as an older version, also delete
+`android/build/generated/autolinking` in the app: React Native caches the autolinking
+manifest there, and a stale one leaves out the codegen glue this module needs.
 
 **`react-native-worklets was not found in the project.` (Gradle)**
 The Android build links `libworklets.so` from the app's copy of `react-native-worklets`.
