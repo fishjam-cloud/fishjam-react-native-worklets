@@ -64,7 +64,11 @@ subscription.remove();
 The callback runs on a dedicated camera frame runtime, never on the JS thread. Frames are
 admitted one at a time: while the callback holds a frame, newer ones are dropped. Each
 processor takes one callback at a time; remove it before attaching another to the same
-processor. Different processors (different camera tracks) can each have their own.
+processor. Different camera tracks can each have their own. `getCameraFrameProcessor`
+returns a new processor on each call, and a track delivers frames only to the last
+callback attached to it. So a new processor for the same track takes over, and `remove()`
+on the older subscription leaves the newer one attached. If the newer subscription is
+removed first, the older one does not get frames again: remove it and attach again.
 
 ## Troubleshooting
 

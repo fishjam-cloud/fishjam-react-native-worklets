@@ -33,8 +33,25 @@ function createConsumer(): MockConsumer {
   return { bindRuntime: jest.fn(), setCallback: jest.fn(), clearCallback: jest.fn() };
 }
 
-function createProcessor(): MockProcessor {
-  return { attach: jest.fn(), detach: jest.fn() } as unknown as MockProcessor;
+function createProcessor(trackId = 'camera-track'): MockProcessor {
+  return { trackId, attach: jest.fn(), detach: jest.fn() } as unknown as MockProcessor;
+}
+
+function createCameraTrack(trackId = 'camera-track') {
+  let attachedConsumer: unknown = null;
+  return {
+    attachedConsumer: () => attachedConsumer,
+    getProcessor(): MockProcessor {
+      const processor = createProcessor(trackId);
+      processor.attach.mockImplementation((consumer: unknown) => {
+        attachedConsumer = consumer;
+      });
+      processor.detach.mockImplementation(() => {
+        attachedConsumer = null;
+      });
+      return processor;
+    },
+  };
 }
 
 const frameCallback: Library.CameraFrameCallback = () => {};
@@ -144,7 +161,9 @@ describe('attachCameraFrameCallback', () => {
     await expect(harness.attachCameraFrameCallback(processor, frameCallback)).rejects.toThrow(
       'A camera frame callback is already attached.',
     );
-    await expect(harness.attachCameraFrameCallback(createProcessor(), frameCallback)).resolves.toBeDefined();
+    await expect(
+      harness.attachCameraFrameCallback(createProcessor('other-track'), frameCallback),
+    ).resolves.toBeDefined();
   });
 
   test('rejects a concurrent attach on the same processor while install is pending', async () => {
@@ -168,5 +187,67 @@ describe('attachCameraFrameCallback', () => {
 
     await expect(harness.attachCameraFrameCallback(processor, frameCallback)).resolves.toBeDefined();
     expect(processor.attach).toHaveBeenCalledTimes(2);
+  });
+
+  describe('when a new processor handle replaces a subscription on the same track', () => {
+    test('removing the replaced subscription leaves the newer consumer attached', async () => {
+      const harness = loadLibrary();
+      const track = createCameraTrack();
+
+      const replaced = await harness.attachCameraFrameCallback(track.getProcessor(), frameCallback);
+      await harness.attachCameraFrameCallback(track.getProcessor(), frameCallback);
+      const [replacedConsumer, newerConsumer] = harness.createConsumer.mock.results.map((result) => result.value);
+      replaced.remove();
+
+      expect(track.attachedConsumer()).toBe(newerConsumer);
+      expect(replacedConsumer.clearCallback).toHaveBeenCalledTimes(1);
+      expect(newerConsumer.clearCallback).not.toHaveBeenCalled();
+    });
+
+    test('removing the newer subscription detaches the track', async () => {
+      const harness = loadLibrary();
+      const track = createCameraTrack();
+
+      const replaced = await harness.attachCameraFrameCallback(track.getProcessor(), frameCallback);
+      const newer = await harness.attachCameraFrameCallback(track.getProcessor(), frameCallback);
+      const newerConsumer = harness.createConsumer.mock.results[1].value;
+      replaced.remove();
+      newer.remove();
+
+      expect(track.attachedConsumer()).toBeNull();
+      expect(newerConsumer.clearCallback).toHaveBeenCalledTimes(1);
+    });
+
+    test('a failed attach leaves the earlier subscription able to detach', async () => {
+      const harness = loadLibrary();
+      const track = createCameraTrack();
+      const failingProcessor = track.getProcessor();
+      failingProcessor.attach.mockImplementation(() => {
+        throw new Error('attach failed');
+      });
+
+      const earlier = await harness.attachCameraFrameCallback(track.getProcessor(), frameCallback);
+      await expect(harness.attachCameraFrameCallback(failingProcessor, frameCallback)).rejects.toThrow('attach failed');
+      earlier.remove();
+
+      expect(track.attachedConsumer()).toBeNull();
+    });
+  });
+
+  test('removing a subscription does not affect another track', async () => {
+    const harness = loadLibrary();
+    const firstTrack = createCameraTrack('first-track');
+    const secondTrack = createCameraTrack('second-track');
+
+    const first = await harness.attachCameraFrameCallback(firstTrack.getProcessor(), frameCallback);
+    const second = await harness.attachCameraFrameCallback(secondTrack.getProcessor(), frameCallback);
+    const secondConsumer = harness.createConsumer.mock.results[1].value;
+    first.remove();
+
+    expect(firstTrack.attachedConsumer()).toBeNull();
+    expect(secondTrack.attachedConsumer()).toBe(secondConsumer);
+
+    second.remove();
+    expect(secondTrack.attachedConsumer()).toBeNull();
   });
 });

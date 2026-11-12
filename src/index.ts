@@ -43,7 +43,10 @@ export interface CameraFrame {
 export type CameraFrameCallback = (frame: CameraFrame) => void;
 
 export interface CameraFrameSubscription {
-  /** Detaches from the track and clears the callback. Safe to repeat. */
+  /**
+   * Always clears the callback. Detaches from the track only if no newer
+   * subscription took it over. Safe to repeat.
+   */
   remove(): void;
 }
 
@@ -70,6 +73,8 @@ interface CameraFrameRuntime {
 
 let runtimePromise: Promise<CameraFrameRuntime> | null = null;
 const activeSubscriptions = new WeakMap<CameraFrameProcessor, CameraFrameSubscription>();
+// A track has one native consumer slot, shared by all its handles, so only its latest subscription may detach.
+const latestSubscriptionByTrack = new Map<string, CameraFrameSubscription>();
 
 function nativeModule(): FishjamWorkletsNativeModule {
   const module = NativeFishjamWorklets;
@@ -122,7 +127,9 @@ function throwIfAttached(processor: CameraFrameProcessor): void {
  * Starts calling `callback` on the camera frame runtime for every frame the
  * processor's track captures. Each processor can have one callback at a time;
  * remove the previous subscription before attaching another to the same
- * processor. Different processors may each have their own.
+ * processor. Different camera tracks may each have their own. A track delivers
+ * frames only to the last callback attached to it, so a new processor for the
+ * same track takes over from the earlier one.
  */
 export async function attachCameraFrameCallback(
   processor: CameraFrameProcessor,
@@ -159,7 +166,10 @@ export async function attachCameraFrameCallback(
       if (activeSubscriptions.get(processor) === subscription) {
         activeSubscriptions.delete(processor);
       }
-      processor.detach();
+      if (latestSubscriptionByTrack.get(processor.trackId) === subscription) {
+        latestSubscriptionByTrack.delete(processor.trackId);
+        processor.detach();
+      }
       scheduleOnRuntime(runtime, () => {
         'worklet';
         consumer.clearCallback();
@@ -167,5 +177,6 @@ export async function attachCameraFrameCallback(
     },
   };
   activeSubscriptions.set(processor, subscription);
+  latestSubscriptionByTrack.set(processor.trackId, subscription);
   return subscription;
 }
