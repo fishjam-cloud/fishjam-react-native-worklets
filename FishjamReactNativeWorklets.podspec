@@ -6,7 +6,9 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 # sources, resolved the way Metro resolves the package, so it never has to enter
 # the fork's Objective-C umbrella header.
 webrtc_package_json = `node --print "require.resolve('@fishjam-cloud/react-native-webrtc/package.json', { paths: ['#{__dir__}'] })"`.strip
-webrtc_dir = File.dirname(webrtc_package_json)
+# Relative, so the Podfile.lock checksum does not depend on the checkout path.
+# __dir__ must keep its symlinks, because Xcode collapses ".." as text.
+webrtc_dir = Pathname.new(File.dirname(webrtc_package_json)).relative_path_from(Pathname.new(__dir__))
 
 Pod::Spec.new do |s|
   s.name                = 'FishjamReactNativeWorklets'
@@ -26,7 +28,7 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'HEADER_SEARCH_PATHS' => [
       '"$(PODS_TARGET_SRCROOT)/cpp"',
-      "\"#{webrtc_dir}/common/cpp/fishjam-video/public\"",
+      "\"$(PODS_TARGET_SRCROOT)/#{webrtc_dir}/common/cpp/fishjam-video/public\"",
       '"$(PODS_ROOT)/Headers/Public/RNWorklets"',
     ].join(' '),
   }
